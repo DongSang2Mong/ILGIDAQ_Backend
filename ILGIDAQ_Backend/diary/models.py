@@ -14,3 +14,9 @@ class DiaryMeta(models.Model):
     numView = models.IntegerField(default=0)
     numLike = models.IntegerField(default=0)
 
+class DiaryImage(models.Model):
+
+    diaryKey = models.ForeignKey(DiaryMeta, on_delete=models.CASCADE, null=True)
+    imageKey = models.CharField(max_length=10, primary_key=True)
+    image = models.ImageField(upload_to='', blank = True, null = True)
+    
