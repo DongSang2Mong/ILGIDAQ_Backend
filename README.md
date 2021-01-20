@@ -14,3 +14,9 @@ setting.py.INSTALLED_APPS += 'rest_framework'
 urls.py랑 settings.py에 미디어 처리되는거 추가
 
 안해도 되는건데 푸시 해보고 싶어서 해봄 ㅋㅋ
+
+
+feature_nonok 시작,
+
+나의 다이어리를 알까?
+아니었어!
