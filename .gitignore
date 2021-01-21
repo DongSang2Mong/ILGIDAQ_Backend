@@ -4,9 +4,15 @@
 
 ### Nonok ###
 
+# migrations #
+
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
+
 # image files #
+
 media/
-migrations/
 *.jpg
 *.gif
 *.png
