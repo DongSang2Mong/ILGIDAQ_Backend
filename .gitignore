@@ -2,6 +2,15 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,django
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,django
 
+### Nonok ###
+
+# image files #
+media/
+migrations/
+*.jpg
+*.gif
+*.png
+
 ### Django ###
 *.log
 *.pot
