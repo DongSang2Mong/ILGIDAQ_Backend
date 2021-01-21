@@ -6,6 +6,7 @@
 
 # image files #
 media/
+migrations/
 *.jpg
 *.gif
 *.png
