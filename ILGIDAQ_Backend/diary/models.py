@@ -1,6 +1,10 @@
 from django.db import models
 import uuid
 
+def image_path(instance, filename):
+    return f'{instance.diaryKey}/{instance.imageNum}'
+
+
 # Create your models here.
 
 class DiaryMeta(models.Model):
@@ -17,12 +21,13 @@ class DiaryMeta(models.Model):
     numView = models.PositiveIntegerField(default=0, editable=False)
     numLike = models.PositiveIntegerField(default=0, editable=False)
 
+
 class DiaryImage(models.Model):
 
     diaryKey = models.CharField(max_length=40)
     imageNum = models.PositiveIntegerField(default=0)
     imageKey = models.CharField(max_length=40, primary_key=True, editable=False)
-    image = models.ImageField(upload_to='', blank = True, null = True)
+    image = models.ImageField(upload_to=image_path, blank = True, null = True)
 
 class DiaryContent(models.Model):
 
