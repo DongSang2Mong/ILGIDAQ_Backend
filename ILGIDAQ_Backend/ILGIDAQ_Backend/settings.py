@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'diary.apps.DiaryConfig',
-    'users.apps.UsersConfig',
     'rest_framework',
 
 ]
