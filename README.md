@@ -13,6 +13,10 @@ UML다이어그램 수정
 2021 01 22: nonok
 develop 0122 시작
 users 앱 생성 - UserLoginInfo 모델 , UserProfile 모델 생성
+diary 앱 수정
+- 정규표현식 검사 부분 추가
+- 이미지 삭제or수정시 기존 파일 삭제
+- diary 앱에 대한 API LIST를 구글 드라이브에 업로드
 
 To 권태환
 
