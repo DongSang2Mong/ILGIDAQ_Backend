@@ -9,7 +9,7 @@
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
-
+**/TH_env/**
 # image files #
 
 media/
