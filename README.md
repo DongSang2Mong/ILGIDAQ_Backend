@@ -7,7 +7,13 @@
 2021 01 20: nonok
 master추가. 아무것도 없는데 그냥 베이스임
 
-develop_0120 시작,
+2021 01 22: nonok
+develop 0122 시작
+users 앱 생성 - UserLoginInfo 모델 , UserProfile 모델 생성
+diary 앱 수정
+- 정규표현식 검사 부분 추가
+- 이미지 삭제or수정시 기존 파일 삭제
+- diary 앱에 대한 API LIST를 구글 드라이브에 업로드
 
 gitignore에 ###nonok###으로 내용 더 넣음. 너도 해라 태환아
 setting.py.INSTALLED_APPS += 'rest_framework'
