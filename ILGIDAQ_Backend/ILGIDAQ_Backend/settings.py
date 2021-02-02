@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     ".ap-northeast-2.compute.amazonaws.com",
-    "ildidaq.nonok.ml",
+    "ilgidaq.nonok.ml",
     "127.0.0.1",
 ]
 
