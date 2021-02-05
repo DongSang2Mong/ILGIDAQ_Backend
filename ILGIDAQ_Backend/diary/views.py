@@ -18,9 +18,62 @@ from rest_framework.views import APIView
 
 # Create your views here.
 
-class DiaryMetaViewset(viewsets.ModelViewSet):
-    queryset = DiaryMeta.objects.all()
+class aboutDiaryMeta(generics.ListAPIView):
+
+    queryset= DiaryMeta.objects.all()
     serializer_class = DiaryMetaSerializer
+
+class DiaryMetaList(aboutDiaryMeta):
+
+    def get(self,request):
+        diaryMeta = DiaryMeta.objects.all()
+        serializer = DiaryMetaSerializer(diaryMeta, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        
+        serializer = DiaryMetaSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class DiaryMetaDetail(aboutDiaryMeta):
+
+    def objectChk(self, dk):
+        if len(DiaryMeta.objects.filter(diaryKey=dk))==0: return False
+        else: return True
+
+    def get(self, request, dk):
+        chk = self.objectChk(dk)
+        if chk:
+            diaryMeta = DiaryMeta.objects.get(diaryKey=dk)
+            serializer = DiaryMetaSerializer(diaryMeta)
+            return Response(serializer.data)
+        else:
+            return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, dk):
+        chk = self.objectChk(dk)
+        if chk:
+            diaryMeta = DiaryMeta.objects.get(diaryKey=dk)
+            serializer = DiaryMetaSerializer(diaryMeta, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
+    
+    def delete(self, request, dk):
+        chk = self.objectChk(dk)
+        if chk:
+            diaryMeta = DiaryMeta.objects.get(diaryKey=dk)
+            diaryMeta.delete()
+            return Response(data="diary :"+dk+" is deleted", status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
 
 class DiaryImageList(APIView):
 
@@ -37,7 +90,7 @@ class DiaryImageWithKey(generics.ListAPIView):
     def get(self, request, dk):
 
         if len(DiaryMeta.objects.filter(diaryKey=dk))==0 :
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
 
         images = DiaryImage.objects.filter(diaryKey=dk)
         serializer = DiaryImageSerializer(images, many=True)
@@ -46,7 +99,7 @@ class DiaryImageWithKey(generics.ListAPIView):
     def post(self, request, dk):
         
         if len(DiaryMeta.objects.filter(diaryKey=dk))==0 :
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
         
         serializer = DiaryImageSerializer(data=request.data)
 
@@ -61,7 +114,6 @@ class DiaryImageWithKey(generics.ListAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def deleteFile(pk):
-    print("###TESTING###")
     path = os.path.join(BASE_DIR, 'media', pk)
     print(path)
 
@@ -75,79 +127,115 @@ class DiaryImageDetail(generics.ListAPIView):
     queryset = DiaryImage.objects.all()
     serializer_class = DiaryImageSerializer
 
-    def get_object(self, pk):
-        try:
-            return DiaryImage.objects.get(pk=pk)
-        except DiaryImage.DoesNotExist:
-            raise Http404
+    def metaChk(self, dk):
+        if len(DiaryMeta.objects.filter(diaryKey=dk))==0: return False
+        else: return True
 
-    def get(self, request, pk):
-        diaryImage = self.get_object(pk)
+    def imgChk(self, dk, ik):
+        imageKey = dk+"/"+ik
+        if len(DiaryImage.objects.filter(imageKey=imageKey))==0: return False
+        else: return True
+
+    def get(self, request, dk, ik):
+
+        chk = self.metaChk(dk)
+        if chk==False: return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
+
+        chk = self.imgChk(dk, ik)
+        if chk==False: return Response(data="Cannot Find image: "+dk+"/"+ik+" in DB", status=status.HTTP_404_NOT_FOUND)
+
+        imageKey = dk+"/"+ik
+        diaryImage = DiaryImage.objects.get(imageKey=imageKey)
         serializer = DiaryImageSerializer(diaryImage)
         return Response(serializer.data)
 
-    def put(self, request, pk):
-        diaryImage = self.get_object(pk)
+    def put(self, request, dk, ik):
+
+        chk = self.metaChk(dk)
+        if chk==False: return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
+
+        chk = self.imgChk(dk, ik)
+        if chk==False: return Response(data="Cannot Find image: "+dk+"/"+ik+" in DB", status=status.HTTP_404_NOT_FOUND)
+
+        imageKey = dk+"/"+ik
+        diaryImage = DiaryImage.objects.get(imageKey=imageKey)
         serializer = DiaryImageSerializer(diaryImage, data=request.data)
         if serializer.is_valid():
-            deleteFile(str(pk))
+            deleteFile(str(imageKey))
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
-        diaryImage = self.get_object(pk)
-        deleteFile(str(pk))
-        diaryImage.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def delete(self, request, dk, ik):
+        
+        chk = self.metaChk(dk)
+        if chk==False: return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
 
-class DiaryContentList(generics.ListCreateAPIView):
+        chk = self.imgChk(dk, ik)
+        if chk==False: return Response(data="Cannot Find image: "+dk+"/"+ik+" in DB", status=status.HTTP_404_NOT_FOUND)
+
+        imageKey = dk+"/"+ik
+        diaryImage = DiaryImage.objects.get(imageKey=imageKey)
+        deleteFile(str(imageKey))
+        diaryImage.delete()
+        return Response(data="image: "+imageKey+" is deleted", status=status.HTTP_204_NO_CONTENT)
+
+class DiaryContentList(generics.ListAPIView):
 
     queryset = DiaryContent.objects.all()
     serializer_class = DiaryContentSerializer
-
-    def post(self, request):
-
-        serializer = DiaryContentSerializer(data=request.data)
-
-        if serializer.is_valid():
-            
-            try: DiaryMeta.objects.get(diaryKey=serializer.validated_data['diaryKey'])
-            except DiaryMeta.DoesNotExist: raise Http404
-
-            contentKey = str(serializer.validated_data['diaryKey'])
-            serializer.validated_data['contentKey'] = contentKey
-            
-            serializer.save()
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class DiaryContentDetail(generics.ListCreateAPIView):
 
     queryset = DiaryContent.objects.all()
     serializer_class = DiaryContentSerializer
 
-    def get_object(self, pk):
-        try:
-            return DiaryContent.objects.get(pk=pk)
-        except DiaryContent.DoesNotExist:
-            raise Http404
+    def metaChk(self, dk):
+        if len(DiaryMeta.objects.filter(diaryKey=dk))==0: return False
+        else: return True
 
-    def get(self, request, pk):
-        diaryContent = self.get_object(pk)
+    def get(self, request, dk):
+
+        chk = self.metaChk(dk)
+        if chk==False: return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
+
+        diaryContent = DiaryContent.objects.get(contentKey=dk)
         serializer = DiaryContentSerializer(diaryContent)
         return Response(serializer.data)
 
-    def put(self, request, pk):
-        diaryContent = self.get_object(pk)
-        serializer = DiaryContentSerializer(diaryContent, data=request.data)
+    def post(self, request, dk):
+
+        chk = self.metaChk(dk)
+        if chk==False: return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
+
+        serializer = DiaryContentSerializer(data=request.data)
+
         if serializer.is_valid():
+
+            serializer.validated_data['contentKey'] = dk
             serializer.save()
-            return Response(serializer.data)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
-        diaryContent = self.get_object(pk)
+    def put(self, request, pk):
+
+        chk = self.metaChk(dk)
+        if chk==False: return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
+
+        diaryContent = DiaryContent.objects.get(contentKey=dk)
+        serializer = DiaryContentSerializer(diaryContent, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, dk):
+
+        chk = self.metaChk(dk)
+        if chk==False: return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
+
+        diaryContent = DiaryContent.objects.get(contentKey=dk)
         diaryContent.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(data="content: "+dk+" is deleted", status=status.HTTP_204_NO_CONTENT)
