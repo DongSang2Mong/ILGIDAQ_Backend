@@ -31,7 +31,6 @@ class DiaryImage(models.Model):
 
 class DiaryContent(models.Model):
 
-    diaryKey = models.CharField(max_length=36, null=False)
     contentKey = models.CharField(max_length=36, primary_key=True, editable=False)
     content = models.TextField(max_length=4000, null=False)
     
