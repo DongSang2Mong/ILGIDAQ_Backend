@@ -100,10 +100,20 @@ class DiaryImageWithKey(generics.ListAPIView):
         
         if len(DiaryMeta.objects.filter(diaryKey=dk))==0 :
             return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
-        
+
         serializer = DiaryImageSerializer(data=request.data)
 
         if serializer.is_valid():
+            
+            imagenum = serializer.validated_data['imageNum']
+            chkstring = dk + "/" + str(imagenum)
+            if len(DiaryImage.objects.filter(imageKey=chkstring))==1:
+                return Response(data="diaryImage: "+chkstring+" is already exist", status=status.HTTP_400_BAD_REQUEST)
+
+            diary = DiaryMeta.objects.get(diaryKey=dk)
+            if serializer.validated_data['imageNum']>diary.numImage:
+                return Response(data="diary: "+dk+" - 's images cannot over "+str(diary.numImage), status=status.HTTP_400_BAD_REQUEST)
+            
 
             imageKey = (str(dk)+"/"+str(serializer.validated_data['imageNum']))
             serializer.validated_data['imageKey'] = imageKey
@@ -198,6 +208,7 @@ class DiaryContentDetail(generics.ListCreateAPIView):
 
         chk = self.metaChk(dk)
         if chk==False: return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
+        if len(DiaryContent.objects.filter(contentKey=dk))==0: return Response(data="diary: "+dk+" - Content is not created.", status=status.HTTP_400_BAD_REQUEST)
 
         diaryContent = DiaryContent.objects.get(contentKey=dk)
         serializer = DiaryContentSerializer(diaryContent)
@@ -207,21 +218,22 @@ class DiaryContentDetail(generics.ListCreateAPIView):
 
         chk = self.metaChk(dk)
         if chk==False: return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
-
+        
         serializer = DiaryContentSerializer(data=request.data)
 
         if serializer.is_valid():
-
+            
             serializer.validated_data['contentKey'] = dk
             serializer.save()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, pk):
+    def put(self, request, dk):
 
         chk = self.metaChk(dk)
         if chk==False: return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
+        if len(DiaryContent.objects.filter(contentKey=dk))==0: return Response(data="diary: "+dk+" - Content is not created.", status=status.HTTP_400_BAD_REQUEST)
 
         diaryContent = DiaryContent.objects.get(contentKey=dk)
         serializer = DiaryContentSerializer(diaryContent, data=request.data)
@@ -235,6 +247,7 @@ class DiaryContentDetail(generics.ListCreateAPIView):
 
         chk = self.metaChk(dk)
         if chk==False: return Response(data="Cannot Find diary: "+dk+" in DB", status=status.HTTP_404_NOT_FOUND)
+        if len(DiaryContent.objects.filter(contentKey=dk))==0: return Response(data="diary: "+dk+" - Content is not created.", status=status.HTTP_400_BAD_REQUEST)
 
         diaryContent = DiaryContent.objects.get(contentKey=dk)
         diaryContent.delete()
