@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Profile
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -24,7 +24,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class LoginSerializer(serializers.ModelSerializer):
     kakaoid = serializers.CharField(max_length=250, min_length=3)
-    password = serializers.CharField(max_length=25, min_length=4, write_only=True)
+    password = serializers.CharField(max_length=25, min_length=4, default='1111')
     tokens = serializers.SerializerMethodField()
 
     def get_tokens(self, obj):
@@ -42,7 +42,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         kakaoid = attrs.get('kakaoid', '')
-        password = attrs.get('password', '')
+        password = attrs.get('password', '1111')
 
         user = auth.authenticate(kakaoid=kakaoid, password=password)
 
@@ -53,3 +53,10 @@ class LoginSerializer(serializers.ModelSerializer):
             'kakaoid': user.kakaoid,
             'tokens': user.tokens()
         }
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = '__all__'

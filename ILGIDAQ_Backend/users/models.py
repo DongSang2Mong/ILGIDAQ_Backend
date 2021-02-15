@@ -1,6 +1,10 @@
 from django.db import models
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager, PermissionsMixin)
+from django_uuid_upload import upload_to_uuid
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # Create your models here.
 
 
@@ -57,3 +61,27 @@ class User(AbstractBaseUser, PermissionsMixin):
             'access': str(refresh.access_token)
 
         }
+
+
+class Profile(models.Model):
+        user = models.OneToOneField(User, on_delete=models.CASCADE)
+        user_pk = models.IntegerField(blank=True)
+        nickname = models.CharField(max_length=40)
+        profileimg = models.ImageField(default='default.jpg', upload_to=upload_to_uuid('profile_pic'))
+        statusmsg = models.TextField(blank=True)
+        numFollower = models.PositiveIntegerField(default=0, editable=True)
+        numFollowing = models.PositiveIntegerField(default=0, editable=True)
+        valPoints = models.PositiveIntegerField(default=0)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance, user_pk=instance.kakaoid)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+
+
