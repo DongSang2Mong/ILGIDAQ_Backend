@@ -31,7 +31,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "192.168.0.3",
     "117.123.224.16",
-    "nonok.iptime.org"
+    "nonok.iptime.org",
 ]
 
 
@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
 
     'rest_framework',
+    'sslserver',
 
 ]
 
