@@ -1,3 +1,4 @@
+
 """
 Django settings for ILGIDAQ_Backend project.
 
@@ -42,7 +43,14 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    ".ap-northeast-2.compute.amazonaws.com",
+    "ilgidaq.nonok.ml",
+    "127.0.0.1",
+    "192.168.0.3",
+    "117.123.224.16",
+    "nonok.iptime.org",
+]
 
 AUTH_USER_MODEL = 'users.User'
 # Application definition
@@ -62,10 +70,9 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'rest_auth.registration',
-
-
-
+    'sslserver',
 ]
+
 REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY': 'error',
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -81,6 +88,7 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
     'SIGNING_KEY': SECRET_KEY,
 }
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
