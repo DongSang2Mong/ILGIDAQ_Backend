@@ -8,7 +8,6 @@ def image_path(instance, filename):
 # Create your models here.
 
 class DiaryMeta(models.Model):
-
     #FIELDS#
 
     diaryKey = models.CharField(max_length=36, default=uuid.uuid4, primary_key=True, editable=False, )
@@ -23,14 +22,11 @@ class DiaryMeta(models.Model):
 
 
 class DiaryImage(models.Model):
-
     diaryKey = models.CharField(max_length=36, null=False, editable=False)
     imageNum = models.PositiveIntegerField(null=False)
     imageKey = models.CharField(max_length=36, primary_key=True, editable=False)
     image = models.ImageField(upload_to=image_path, blank = True, null = True)
 
 class DiaryContent(models.Model):
-
     contentKey = models.CharField(max_length=36, primary_key=True, editable=False)
     content = models.TextField(max_length=4000, null=False)
-    

@@ -24,4 +24,3 @@ urlpatterns = [
     url(r'^diary-content/(?P<dk>([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}))$', views.DiaryContentDetail.as_view()),
 
 ]
-
