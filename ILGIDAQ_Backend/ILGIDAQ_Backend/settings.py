@@ -44,12 +44,11 @@ SECRET_KEY = get_secret("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    ".ap-northeast-2.compute.amazonaws.com",
-    "ilgidaq.nonok.ml",
+
     "127.0.0.1",
-    "192.168.0.3",
-    "117.123.224.16",
+    "ilgidaq.nonok.ml",
     "nonok.iptime.org",
+    
 ]
 
 AUTH_USER_MODEL = 'users.User'
