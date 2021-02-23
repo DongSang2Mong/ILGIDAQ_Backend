@@ -29,6 +29,9 @@ ALLOWED_HOSTS = [
     ".ap-northeast-2.compute.amazonaws.com",
     "ilgidaq.nonok.ml",
     "127.0.0.1",
+    "192.168.0.3",
+    "117.123.224.16",
+    "nonok.iptime.org",
 ]
 
 
@@ -46,6 +49,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
 
     'rest_framework',
+    'sslserver',
 
 ]
 
